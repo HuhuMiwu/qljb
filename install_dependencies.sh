@@ -13,6 +13,9 @@ PYTHON_DEPENDENCIES=(
     autopep8 flake8 twisted paramiko cryptography pyqt5 pytz python-dateutil
     sympy networkx pytest-django pytest-flask pytest-cov email-validator
     pygments pyexcel pyexcel-xlsx boto3 six docopt
+    scrapy selenium pyppeteer requests-html fake-useragent pyquery
+    tldextract urllib3 cssselect html5lib brotli pyspider grab user-agents
+    httpx feedparser newspaper3k pywhois
 )
 
 # Node.js 依赖列表
@@ -26,19 +29,36 @@ NODE_DEPENDENCIES=(
 )
 
 # 安装 Python 依赖
-echo "开始安装 Python 依赖..."
-for dependency in "${PYTHON_DEPENDENCIES[@]}"; do
-    echo "正在安装 Python 依赖: $dependency"
-    pip3 install "$dependency" -i "$PYTHON_MIRROR"
-done
-echo "Python 依赖安装完成!"
+install_python_dependencies() {
+    echo -e "\e[1;34m开始安装 Python 依赖...\e[0m"
+    for dependency in "${PYTHON_DEPENDENCIES[@]}"; do
+        echo -e "\e[1;33m正在安装 Python 依赖: $dependency\e[0m"
+        if pip3 install "$dependency" -i "$PYTHON_MIRROR"; then
+            echo -e "\e[1;32m安装成功: $dependency\e[0m"
+        else
+            echo -e "\e[1;31m安装失败: $dependency\e[0m"
+        fi
+    done
+    echo -e "\e[1;34mPython 依赖安装完成!\e[0m"
+}
 
 # 安装 Node.js 依赖
-echo "开始安装 Node.js 依赖..."
-for dependency in "${NODE_DEPENDENCIES[@]}"; do
-    echo "正在安装 Node.js 依赖: $dependency"
-    npm install "$dependency" --registry "$NPM_MIRROR"
-done
-echo "Node.js 依赖安装完成!"
+install_node_dependencies() {
+    echo -e "\e[1;34m开始安装 Node.js 依赖...\e[0m"
+    for dependency in "${NODE_DEPENDENCIES[@]}"; do
+        echo -e "\e[1;33m正在安装 Node.js 依赖: $dependency\e[0m"
+        if npm install "$dependency" --registry "$NPM_MIRROR"; then
+            echo -e "\e[1;32m安装成功: $dependency\e[0m"
+        else
+            echo -e "\e[1;31m安装失败: $dependency\e[0m"
+        fi
+    done
+    echo -e "\e[1;34mNode.js 依赖安装完成!\e[0m"
+}
 
-echo "所有依赖安装完成!"
+# 并行安装依赖
+install_python_dependencies &
+install_node_dependencies &
+wait
+
+echo -e "\e[1;34m所有依赖安装完成!\e[0m"
